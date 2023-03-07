@@ -14,6 +14,7 @@ from tensorflow.keras.layers import Embedding, LSTM, Dense, Bidirectional
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint
 from midi_to_dataframe import NoteMapper, MidiReader, MidiWriter
 import IPython
 from IPython.display import Image, IFrame
@@ -24,6 +25,7 @@ import json
 import music21
 import pickle
 import nltk
+from savetogit import *
 nltk.download('punkt')
 
 
@@ -202,6 +204,11 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(total_unique_words, activation='softmax')
 ])
 
+class CustomCallback(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        print("Saving Model After ", epoch, " to GitHub")
+        saveToGit()
+
 # Compile the model
 model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 tf.keras.utils.plot_model(model, show_shapes=True)
@@ -211,4 +218,4 @@ checkpoint_path = './model_checkpoint.h5'
 checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_loss', save_best_only=True, save_weights_only=True, mode='min')
 
 # Train the model with the checkpoint
-history = model.fit(x_values, y_values, epochs=25, validation_split=0.2, verbose=1, batch_size=128, callbacks=[checkpoint])
+history = model.fit(x_values, y_values, epochs=25, validation_split=0.2, verbose=1, batch_size=128, callbacks=[checkpoint, CustomCallback()])

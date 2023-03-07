@@ -4,7 +4,8 @@ RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/
     apt-get update && apt-get install -y --no-install-recommends \
     git \
 	swig \
-	libasound2-dev
+	libasound2-dev \
+	graphviz
 
 RUN addgroup -q --system project && \
     adduser -q --system --home /home/project \
