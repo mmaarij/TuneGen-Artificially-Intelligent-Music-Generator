@@ -1,0 +1,20 @@
+# Ignoring the IDE related folders
+.idea/
+
+# Ignoring the git directory
+.git/
+
+# Ignoring the python virtual env folder
+venv/
+
+# Ignoring the python compiled and cache folders and files
+__pycache__/
+*.py[cod]
+
+# Ignoring the project data folder
+dstc8-schema-guided-dialogue/
+
+# Ignoring the projects output files and folders
+pickles/
+checkpoints/
+temp/
