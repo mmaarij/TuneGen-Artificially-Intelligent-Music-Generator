@@ -114,7 +114,7 @@ for line in corpus:
 
 
 input_sequences = []
-n_gram_len = 20
+n_gram_len = 5
 
 for line in corpus:
     token_list = tokenizer.texts_to_sequences([line])[0]
@@ -204,18 +204,25 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(total_unique_words, activation='softmax')
 ])
 
+# Define the checkpoint
+#ACCURACY_THRESHOLD = 0.95
+checkpoint_name = "model3_checkpoint.h5"
+checkpoint_path = "./" + checkpoint_name
+
 class CustomCallback(tf.keras.callbacks.Callback):
-    def on_epoch_end(self, epoch, logs=None):
-        print("Saving Model After ", epoch, " to GitHub")
-        saveToGit()
+    def on_epoch_end(self, epoch, logs={}):
+        print("\nSaving Model After ", epoch, " to GitHub\n")
+        saveToGit(checkpoint_name, epoch, logs.get("accuracy"), logs.get("loss"))
+        
+        #if(logs.get("accuracy") >= ACCURACY_THRESHOLD):   
+            #print("\nReached %2.2f%% accuracy, so stopping training!!" %(ACCURACY_THRESHOLD*100))   
+            #self.model.stop_training = True
 
 # Compile the model
-model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 tf.keras.utils.plot_model(model, show_shapes=True)
 
-# Define the checkpoint
-checkpoint_path = './model_checkpoint.h5'
 checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_loss', save_best_only=True, save_weights_only=True, mode='min')
 
 # Train the model with the checkpoint
-history = model.fit(x_values, y_values, epochs=25, validation_split=0.2, verbose=1, batch_size=128, callbacks=[checkpoint, CustomCallback()])
+history = model.fit(x_values, y_values, epochs=150, validation_split=0.2, verbose=1, batch_size=150, callbacks=[checkpoint, CustomCallback()])
